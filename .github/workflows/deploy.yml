@@ -1,26 +1,29 @@
-name: Deploy Application to EC2
+name: Deploy to EC2
 
 on:
   push:
     branches:
-      - main  # or replace with your desired branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Setup SSH Key and Known Hosts
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          eval $(ssh-agent -s)
-          ssh-add ~/.ssh/deploy_key
-          ssh-keyscan -H ubuntu@ec2-13-53-97-124.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Deploy to EC2 via SSH
-        run: |
-          ssh -i ~/.ssh/deploy_key ubuntu@ec1234.eu-north-1.compute.amazonaws.com << 'EOF'
-          echo "Connected to EC2 successfully!"
-          EOF
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Add EC2 to known hosts
+      run: |
+        ssh-keyscan -H ubuntu@ec2-13-53-97-124.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+
+    - name: Connect to EC2 and run commands
+      run: |
+        ssh ubuntu@ec2-13-53-97-124.eu-north-1.compute.amazonaws.com << 'EOF'
+          echo "Successfully connected to EC2!"
+        EOF
