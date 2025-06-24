@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -22,8 +22,16 @@ jobs:
       run: |
         ssh-keyscan -H ec2-13-53-97-124.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
 
-    - name: Connect to EC2 and run commands
+    - name: Connect to EC2 and deploy
       run: |
         ssh ubuntu@ec2-13-53-97-124.eu-north-1.compute.amazonaws.com << 'EOF'
-          echo "Successfully connected to EC2!"
+          echo "Connected to EC2"
+          cd ~/JobRecruitment/Full-Stack-Project-Dockerization
+          echo "📁 Changed to project directory"
+          git pull origin main
+          echo "Pulled latest changes"
+          sudo docker compose down
+          echo "Docker Compose down"
+          sudo docker compose up --build -d
+          echo "Docker Compose up completed"
         EOF
