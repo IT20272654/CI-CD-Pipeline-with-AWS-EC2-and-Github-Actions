@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main
+      - test
 
 jobs:
   deploy:
@@ -27,7 +27,7 @@ jobs:
         ssh ubuntu@ec2-13-53-97-124.eu-north-1.compute.amazonaws.com << 'EOF'
           echo "Connected to EC2"
           cd ~/JobRecruitment/Full-Stack-Project-Dockerization
-          echo "📁 Changed to project directory"
+          echo "Changed to project directory"
           git pull origin main
           echo "Pulled latest changes"
           sudo docker compose down
